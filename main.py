@@ -1,6 +1,9 @@
 # importing tkinter module
+import pickle
 from tkinter import *
+from tkinter import messagebox
 from tkinter.ttk import * #progressbar
+
 
 from listWindow import listWindowClass
 from payWindow import payWindowClass
@@ -8,14 +11,30 @@ from worstWindow import worstWindowClass
 
 class mainWindow:
     def __init__(self):
-        self.total = 1200
+        self.total = 0
         self.target = 4500
         # creating tkinter window
         self.root = Tk()
 
         #TEXT
 
-        velkomst = Label(self.root, text="Velkommen til fodboldtur GUI")
+        # load filen:
+        self.filename = 'betalinger.pk'
+        self.fodboldtur = {}
+        try:  # FILEN FINDES :)
+            infile = open(self.filename, 'rb')
+            self.fodboldtur = pickle.load(infile)
+            infile.close()
+        except:  # FILEN FINDES IKKE.
+            ##TODONE: warn a brother
+            messagebox.showerror(parent=self.root, title="GWAAAAAAA", message="FILEN ER IKKE FUNDET!!")
+        print(self.fodboldtur)
+        self.total = sum(self.fodboldtur.values())
+        print(f"TOTAL: {self.total}")
+
+
+
+        velkomst = Label(self.root, text="Gutternes fodboldtur ")
         velkomst.pack(pady=10)
 
         # Progress bar widget
@@ -39,8 +58,11 @@ class mainWindow:
         payButton = Button(self.root,text ="Indbetal",command = lambda: payWindowClass(self))
         payButton.pack(padx = 20, pady = 10,side=LEFT)
 
-        bottom3Button = Button(self.root,text ="Bund 3",command = lambda: worstWindowClass(self))
+        bottom3Button = Button(self.root,text ="De 3 taber",command = lambda: worstWindowClass(self))
         bottom3Button.pack(padx = 20, pady = 10,side=LEFT)
+
+
+
 
         # infinite loop
         mainloop()

@@ -1,32 +1,42 @@
-# importing tkinter module
 from tkinter import *
 from tkinter import messagebox
 
 class payWindowClass:
-
     def __init__(self, master):
-        self.master = master #reference til main window objektet
+        self.master = master
         self.payWindow = Toplevel(self.master.root)
         self.payWindow.title("Pay Window")
         self.payWindow.geometry("200x200")
 
-        Label(self.payWindow,
-              text="Indbetal").pack()
+        # Labels and entry fields for player's name and payment amount
+        Label(self.payWindow, text="Spillerens navn:").pack()
+        self.player_name = Entry(self.payWindow)
+        self.player_name.pack()
 
+        Label(self.payWindow, text="Indbetal:").pack()
         self.money = Entry(self.payWindow)
         self.money.pack()
 
-        self.button = Button(self.payWindow, text="betal", command= self.addMoney)
+        # Button to add payment
+        self.button = Button(self.payWindow, text="Betal", command=self.addMoney)
         self.button.pack()
 
     def addMoney(self):
+        # Get player's name and payment amount from entry fields
+        player_name = self.player_name.get()
         try:
-            amount = abs(int(self.money.get())) #HUSK AT VALIDERE INPUT!, kun positive heltal!
-        except:
-            messagebox.showerror(parent=self.payWindow , title="Beløb fejl!", message="Prøv igen.\nKun hele tal!")
+            amount = int(self.money.get())
+        except ValueError:
+            messagebox.showerror(parent=self.payWindow, title="Fejl", message="Ugyldigt beløb! Indtast kun heltal.")
             return
 
+        # Update total amount and progress bar
         self.master.total += amount
         self.master.progressLabelText.set(f"Indsamlet: {self.master.total} af {self.master.target} kroner:")
-        print(f"Indsamlet: {self.master.total} af {self.master.target} kroner!")
         self.master.progress['value'] = self.master.total / self.master.target * 100
+
+        # Add player and payment information to the list
+        self.master.fodboldtur[player_name] = amount
+
+        # Print confirmation message
+        print(f"{player_name} har betalt {amount} kr.")
